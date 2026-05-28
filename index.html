@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rede Científica</title>
+</head>
+<style>
+  :root{
+    --bg-0:#050506;
+    --bg-1:#0b0b0d;
+    --bg-2:#121216;
+    --bg-3:#1a1a20;
+    --glass:rgba(24,24,29,.62);
+    --glass-2:rgba(34,34,41,.52);
+    --line:rgba(255,255,255,.10);
+    --line-2:rgba(255,255,255,.16);
+    --txt:#f5f7fa;
+    --txt-2:#c6ccd5;
+    --txt-3:#8f98a7;
+    --blue:#0a84ff;
+    --blue-2:#4aa3ff;
+    --green:#30d158;
+    --orange:#ff9f0a;
+    --red:#ff453a;
+    --radius:16px;
+    --shadow:0 14px 36px rgba(0,0,0,.45);
+  }
+
+  *{box-sizing:border-box}
+
+  html,body{height:100%}
+
+  body{
+    margin:0;
+    color:var(--txt);
+    font:500 15px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
+    background:
+      radial-gradient(1000px 500px at -10% -20%, #202028 0%, transparent 60%),
+      radial-gradient(800px 420px at 110% -10%, #1b2330 0%, transparent 58%),
+      linear-gradient(160deg,var(--bg-0),var(--bg-1) 45%,var(--bg-2));
+    max-width:980px;
+    margin-inline:auto;
+    padding:20px 16px 40px;
+  }
+
+  h1{
+    margin:4px 0 14px;
+    font-size:32px;
+    line-height:1.1;
+    letter-spacing:-.03em;
+    font-weight:700;
+  }
+
+  h2,h3{
+    margin:0 0 10px;
+    font-weight:650;
+    letter-spacing:-.01em;
+  }
+
+  p{margin:0 0 14px;color:var(--txt-2)}
+
+  #tokenView{
+    display:inline-block;
+    padding:5px 10px;
+    border-radius:999px;
+    background:var(--glass-2);
+    border:1px solid var(--line);
+    color:var(--txt);
+    word-break:break-all;
+  }
+
+  nav{
+    position:sticky;
+    top:10px;
+    z-index:20;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:10px;
+    margin:0 0 14px;
+    border-radius:14px;
+    background:rgba(18,18,22,.68);
+    border:1px solid var(--line);
+    backdrop-filter:blur(20px) saturate(140%);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);
+    box-shadow:var(--shadow);
+  }
+
+  section{
+    position:relative;
+    margin:0 0 14px;
+    padding:16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--line);
+    backdrop-filter:blur(22px) saturate(145%);
+    -webkit-backdrop-filter:blur(22px) saturate(145%);
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+
+  section::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    pointer-events:none;
+    background:linear-gradient(140deg,rgba(255,255,255,.06),transparent 40%,rgba(255,255,255,.03));
+  }
+
+  input,textarea,select{
+    width:100%;
+    margin:0 0 10px;
+    padding:11px 12px;
+    border-radius:12px;
+    border:1px solid var(--line-2);
+    background:#0f1014;
+    color:var(--txt);
+    outline:none;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+  }
+
+  input::placeholder,textarea::placeholder{color:var(--txt-3)}
+  textarea{min-height:96px;resize:vertical}
+
+  input:focus,textarea:focus,select:focus{
+    border-color:rgba(10,132,255,.85);
+    box-shadow:0 0 0 3px rgba(10,132,255,.24), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+
+  button{
+    appearance:none;
+    border:1px solid var(--line-2);
+    background:linear-gradient(180deg,#262833,#1a1c25);
+    color:var(--txt);
+    padding:9px 13px;
+    border-radius:999px;
+    cursor:pointer;
+    font-weight:600;
+    letter-spacing:.01em;
+    margin:0 8px 8px 0;
+    transition:.16s ease;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 18px rgba(0,0,0,.35);
+  }
+
+  button:hover{
+    transform:translateY(-1px);
+    border-color:rgba(255,255,255,.25);
+    filter:brightness(1.08);
+  }
+
+  button:active{transform:translateY(0)}
+  button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+  #loginBtn,#regBtn,#feedRefresh,#usuariosBuscar,#projetosListar,#pubListar,#perfilSalvar,#projCriar,#pubCriar{
+    background:linear-gradient(180deg,#1c3f72,#0a84ff);
+    border-color:rgba(122,183,255,.65);
+    color:#f8fbff;
+  }
+
+  #logoutBtn{
+    background:linear-gradient(180deg,#4a1f25,#2e1418);
+    border-color:rgba(255,69,58,.45);
+    color:#ffd8d5;
+  }
+
+  hr{
+    border:0;
+    height:1px;
+    margin:12px 0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+  }
+
+  ul{
+    margin:8px 0 12px;
+    padding:0;
+    list-style:none;
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    background:rgba(12,13,17,.75);
+  }
+
+  li{
+    padding:12px 14px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    color:var(--txt-2);
+    background:transparent;
+  }
+
+  li:last-child{border-bottom:0}
+  li > span{color:var(--txt)}
+
+  /* Feed estilo timeline (lembrando X) */
+  #feedList{
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(8,10,14,.78);
+  }
+  #feedList li{
+    position:relative;
+    padding:14px 14px 14px 48px;
+    color:#e5e9f0;
+    background:linear-gradient(180deg,rgba(255,255,255,.01),rgba(255,255,255,0));
+  }
+  #feedList li::before{
+    content:"";
+    position:absolute;
+    left:16px;
+    top:16px;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:linear-gradient(180deg,#8892a5,#5f6777);
+    box-shadow:0 0 0 3px rgba(255,255,255,.05);
+  }
+  #feedList li:hover{background:rgba(255,255,255,.03)}
+
+  /* Usuários / conexões */
+  #usuariosList li,#conexoesList li,#pendentesList li,#enviadosList li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0));
+  }
+
+  #pendentesList li{
+    border-left:3px solid var(--orange);
+  }
+  #enviadosList li{
+    border-left:3px solid #7d8596;
+  }
+
+  /* Projetos: cartão técnico */
+  #projetosList{
+    background:rgba(8,13,20,.8);
+    border-color:rgba(74,163,255,.26);
+  }
+  #projetosList li{
+    position:relative;
+    padding:14px 14px 14px 50px;
+    color:#d8e7ff;
+    border-bottom-color:rgba(74,163,255,.18);
+  }
+  #projetosList li::before{
+    content:"PR";
+    position:absolute;
+    left:14px;
+    top:12px;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.08em;
+    color:#b8d8ff;
+    background:rgba(10,132,255,.18);
+    border:1px solid rgba(10,132,255,.45);
+    border-radius:8px;
+    padding:2px 6px;
+  }
+
+  /* Publicações: cartão editorial */
+  #pubList{
+    background:rgba(11,16,12,.8);
+    border-color:rgba(48,209,88,.28);
+  }
+  #pubList li{
+    position:relative;
+    padding:14px 14px 14px 50px;
+    color:#d7f5df;
+    border-bottom-color:rgba(48,209,88,.2);
+  }
+  #pubList li::before{
+    content:"PB";
+    position:absolute;
+    left:14px;
+    top:12px;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.08em;
+    color:#c9f8d7;
+    background:rgba(48,209,88,.16);
+    border:1px solid rgba(48,209,88,.45);
+    border-radius:8px;
+    padding:2px 6px;
+  }
+
+  /* Blocos de debug/retorno */
+  pre{
+    margin:8px 0 0;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.14);
+    background:#090b10;
+    color:#cfe2ff;
+    font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+    max-height:260px;
+    overflow:auto;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+
+  /* Títulos por tela com identidade própria */
+  section[data-screen="feed"] h2{color:#e9edf5}
+  section[data-screen="usuarios"] h2,
+  section[data-screen="usuarios"] h3{color:#dbe7ff}
+  section[data-screen="projetos"] h2{color:#b9d9ff}
+  section[data-screen="publicacoes"] h2{color:#bff0cc}
+  section[data-screen="perfil"] h2{color:#e8e9ee}
+  section[data-screen="auth"] h2{color:#e8edf8}
+
+  [hidden]{display:none !important}
+
+  @media (max-width:760px){
+    body{padding:14px 12px 30px}
+    h1{font-size:28px}
+    nav{position:static}
+    section{padding:14px}
+    button{width:100%;margin-right:0}
+    #usuariosList li button,#conexoesList li button,#pendentesList li button,#enviadosList li button{width:auto}
+  }
+/* ajuste para listas com botão */
+ul{
+  overflow: visible; /* antes estava hidden */
+}
+
+#usuariosList li,
+#conexoesList li,
+#pendentesList li,
+#enviadosList li{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap; /* permite quebrar linha */
+}
+
+#usuariosList li > span{
+  flex:1 1 320px; /* texto ocupa espaço, botão continua visível */
+  min-width:220px;
+}
+
+#usuariosList li button{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+</style>
+<body>
+  <h1>Rede Científica</h1>
+
+  <p><strong>Token:</strong> <span id="tokenView">nenhum</span></p>
+
+  <nav id="nav" hidden>
+    <button data-go="feed">Feed</button>
+    <button data-go="usuarios">Usuários & Conexões</button>
+    <button data-go="projetos">Projetos</button>
+    <button data-go="publicacoes">Publicações</button>
+    <button data-go="perfil">Perfil</button>
+    <button id="logoutBtn">Sair</button>
+  </nav>
+
+  <!-- LOGIN / REGISTRO -->
+  <section data-screen="auth">
+    <h2>Login</h2>
+    <input id="loginEmail" type="email" placeholder="Email" />
+    <input id="loginSenha" type="password" placeholder="Senha" />
+    <button id="loginBtn">Entrar</button>
+    <pre id="loginOut"></pre>
+
+    <h2>Registro</h2>
+    <input id="regNome" type="text" placeholder="Nome" />
+    <input id="regEmail" type="email" placeholder="Email" />
+    <input id="regSenha" type="password" placeholder="Senha" />
+    <input id="regInst" type="text" placeholder="Instituição" />
+    <input id="regArea" type="text" placeholder="Área de Pesquisa" />
+    <button id="regBtn">Registrar</button>
+    <pre id="regOut"></pre>
+  </section>
+
+  <!-- FEED -->
+  <section data-screen="feed" hidden>
+    <h2>Feed</h2>
+    <button id="feedRefresh">Atualizar feed</button>
+    <ul id="feedList"></ul>
+    <pre id="feedOut"></pre>
+  </section>
+
+  <!-- USUÁRIOS E CONEXÕES -->
+  <section data-screen="usuarios" hidden>
+    <h2>Usuários</h2>
+    <button id="usuariosListar">Listar todos</button>
+    <input id="usuariosBusca" type="text" placeholder="Buscar por nome, área ou instituição" />
+    <button id="usuariosBuscar">Buscar</button>
+    <ul id="usuariosList"></ul>
+    <pre id="usuariosOut"></pre>
+
+    <h2>Conexões</h2>
+    <button id="conexoesListar">Minhas conexões</button>
+    <ul id="conexoesList"></ul>
+    <pre id="conexoesOut"></pre>
+
+    <h3>Convites recebidos</h3>
+    <button id="pendentesBtn">Atualizar recebidos</button>
+    <ul id="pendentesList"></ul>
+
+    <h3>Convites enviados (pendentes)</h3>
+    <button id="enviadosBtn">Atualizar enviados</button>
+    <ul id="enviadosList"></ul>
+  </section>
+
+  <!-- PROJETOS -->
+  <section data-screen="projetos" hidden>
+    <h2>Projetos</h2>
+    <button id="projetosListar">Listar todos</button>
+    <ul id="projetosList"></ul>
+    <pre id="projetosOut"></pre>
+
+    <h3>Novo projeto</h3>
+    <input id="projTitulo" type="text" placeholder="Título" />
+    <textarea id="projDescricao" placeholder="Descrição"></textarea>
+    <input id="projArea" type="text" placeholder="Área de Pesquisa" />
+    <select id="projStatus">
+      <option value="aberto">Aberto</option>
+      <option value="em_andamento">Em Andamento</option>
+      <option value="concluido">Concluído</option>
+    </select>
+    <button id="projCriar">Criar projeto</button>
+  </section>
+
+  <!-- PUBLICAÇÕES -->
+  <section data-screen="publicacoes" hidden>
+    <h2>Publicações</h2>
+    <button id="pubListar">Listar todas</button>
+    <ul id="pubList"></ul>
+    <pre id="pubOut"></pre>
+
+    <h3>Nova publicação</h3>
+    <input id="pubTitulo" type="text" placeholder="Título" />
+    <textarea id="pubResumo" placeholder="Resumo"></textarea>
+    <input id="pubArquivo" type="file" accept=".pdf,.doc,.docx" />
+    <button id="pubCriar">Criar publicação</button>
+  </section>
+
+  <!-- PERFIL -->
+  <section data-screen="perfil" hidden>
+    <h2>Editar perfil</h2>
+    <input id="perfilNome" type="text" placeholder="Nome" />
+    <input id="perfilInst" type="text" placeholder="Instituição" />
+    <input id="perfilArea" type="text" placeholder="Área de Pesquisa" />
+    <input id="perfilLattes" type="text" placeholder="Link Lattes" />
+    <textarea id="perfilBio" placeholder="Bio"></textarea>
+    <button id="perfilSalvar">Salvar perfil</button>
+    <pre id="perfilOut"></pre>
+  </section>
+
+<script>
+  const API_URL = "http://54.94.192.41:3000";
+
+  const $ = (id) => document.getElementById(id);
+  const screens = [...document.querySelectorAll("[data-screen]")];
+
+  let meuId = null;
+  const estadosConexao = new Map(); // userId -> "enviado" | "conectado"
+
+  function show(screen) {
+    screens.forEach(s => s.hidden = s.dataset.screen !== screen);
+  }
+
+  function out(id, data) {
+    $(id).textContent = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+  }
+
+  function token() {
+    return localStorage.getItem("token");
+  }
+
+  function decodeJwtPayload(t) {
+    try {
+      const base64Url = t.split(".")[1];
+      if (!base64Url) return null;
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const json = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+      return JSON.parse(json);
+    } catch {
+      return null;
+    }
+  }
+
+  function getMeuIdFromToken() {
+    const t = token();
+    if (!t) return null;
+    const payload = decodeJwtPayload(t);
+    if (!payload) return null;
+    return String(payload.id ?? payload.user_id ?? payload.sub ?? "");
+  }
+
+  function setToken(t) {
+    if (t) localStorage.setItem("token", t);
+    else localStorage.removeItem("token");
+
+    $("tokenView").textContent = t ? t.slice(0, 40) + "..." : "nenhum";
+    meuId = getMeuIdFromToken();
+
+    const logged = !!t;
+    $("nav").hidden = !logged;
+    show(logged ? "feed" : "auth");
+  }
+
+  function headers(json = true) {
+    const h = {};
+    if (json) h["Content-Type"] = "application/json";
+    if (token()) h["Authorization"] = "Bearer " + token();
+    return h;
+  }
+
+  async function read(res) {
+    const ct = res.headers.get("content-type") || "";
+    const data = ct.includes("application/json") ? await res.json() : await res.text();
+    return { ok: res.ok, status: res.status, data };
+  }
+
+  function renderList(el, arr, toText) {
+    el.innerHTML = "";
+    if (!Array.isArray(arr) || arr.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "Sem resultados.";
+      el.appendChild(li);
+      return;
+    }
+    arr.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = toText(item);
+      el.appendChild(li);
+    });
+  }
+
+  function marcarConviteEnviado(btn) {
+    btn.textContent = "Convite enviado";
+    btn.disabled = true;
+  }
+
+  function pickId(obj, keys) {
+    for (const k of keys) {
+      if (obj && obj[k] !== undefined && obj[k] !== null && obj[k] !== "") return String(obj[k]);
+    }
+    return null;
+  }
+
+  async function atualizarEstadosConexao() {
+    estadosConexao.clear();
+    meuId = getMeuIdFromToken();
+
+    const [aceitas, enviadas] = await Promise.all([
+      apiGet("/api/conexoes").catch(e => ({ ok: false, data: { erro: e.message } })),
+      apiGet("/api/conexoes/pendentes-enviados").catch(e => ({ ok: false, data: { erro: e.message } }))
+    ]);
+
+    // Conexões aceitas
+    if (aceitas.ok && Array.isArray(aceitas.data)) {
+      aceitas.data.forEach(c => {
+        const solicitante = pickId(c, ["solicitante_id", "from_id", "usuario1_id", "remetente_id"]);
+        const receptor = pickId(c, ["receptor_id", "to_id", "usuario2_id", "destinatario_id"]);
+
+        let outro = null;
+        if (meuId && solicitante && receptor) {
+          if (solicitante === meuId) outro = receptor;
+          else if (receptor === meuId) outro = solicitante;
+        }
+
+        // fallback genérico
+        if (!outro) {
+          const candidato = pickId(c, ["usuario_id", "id_usuario", "receptor_id", "solicitante_id"]);
+          if (candidato && candidato !== meuId) outro = candidato;
+        }
+
+        if (outro) estadosConexao.set(outro, "conectado");
+      });
+    }
+
+    // Convites enviados pendentes
+    if (enviadas.ok && Array.isArray(enviadas.data)) {
+      enviadas.data.forEach(c => {
+        const receptor = pickId(c, ["receptor_id", "id_receptor", "destino_id", "usuario_id", "to_id"]);
+        if (receptor && !estadosConexao.has(receptor)) {
+          estadosConexao.set(receptor, "enviado");
+        }
+      });
+    }
+  }
+
+  function aplicarEstadoBotaoUsuario(usuario, botao) {
+    const uid = String(usuario?.id ?? "");
+    if (!uid) return;
+
+    if (meuId && uid === meuId) {
+      botao.textContent = "Você";
+      botao.disabled = true;
+      return;
+    }
+
+    const estado = estadosConexao.get(uid);
+    if (estado === "conectado") {
+      botao.textContent = "Conectado";
+      botao.disabled = true;
+      return;
+    }
+    if (estado === "enviado") {
+      marcarConviteEnviado(botao);
+      return;
+    }
+
+    botao.textContent = "Conectar";
+    botao.disabled = false;
+  }
+
+  async function apiGet(path) {
+    const res = await fetch(API_URL + path, { headers: headers(true) });
+    return read(res);
+  }
+
+  // Auth
+  $("loginBtn").onclick = async () => {
+    const payload = { email: $("loginEmail").value, senha: $("loginSenha").value };
+    const r = await fetch(API_URL + "/api/auth/login", {
+      method: "POST",
+      headers: headers(true),
+      body: JSON.stringify(payload)
+    }).then(read).catch(e => ({ ok: false, data: { erro: e.message } }));
+
+    if (r.ok && r.data.token) setToken(r.data.token);
+    out("loginOut", r.data);
+  };
+
+  $("regBtn").onclick = async () => {
+    const payload = {
+      nome: $("regNome").value,
+      email: $("regEmail").value,
+      senha: $("regSenha").value,
+      instituicao: $("regInst").value,
+      area_pesquisa: $("regArea").value
+    };
+    const r = await fetch(API_URL + "/api/auth/register", {
+      method: "POST",
+      headers: headers(true),
+      body: JSON.stringify(payload)
+    }).then(read).catch(e => ({ ok: false, data: { erro: e.message } }));
+
+    if (r.ok && r.data.token) setToken(r.data.token);
+    out("regOut", r.data);
+  };
+
+  $("logoutBtn").onclick = () => setToken(null);
+
+  // Navegação
+  document.querySelectorAll("[data-go]").forEach(btn => {
+    btn.onclick = () => show(btn.dataset.go);
+  });
+
+  // Feed (projetos + publicações)
+  $("feedRefresh").onclick = async () => {
+    const [p1, p2] = await Promise.all([
+      apiGet("/api/projetos").catch(e => ({ ok: false, data: { erro: e.message } })),
+      apiGet("/api/publicacoes").catch(e => ({ ok: false, data: { erro: e.message } }))
+    ]);
+
+    const list = $("feedList");
+    list.innerHTML = "";
+
+    if (p1.ok && Array.isArray(p1.data)) {
+      p1.data.forEach(i => {
+        const li = document.createElement("li");
+        li.textContent = "[Projeto] " + (i.titulo || "Sem título");
+        list.appendChild(li);
+      });
+    }
+    if (p2.ok && Array.isArray(p2.data)) {
+      p2.data.forEach(i => {
+        const li = document.createElement("li");
+        li.textContent = "[Publicação] " + (i.titulo || "Sem título");
+        list.appendChild(li);
+      });
+    }
+    if (!list.children.length) {
+      const li = document.createElement("li");
+      li.textContent = "Nada para exibir.";
+      list.appendChild(li);
+    }
+
+    out("feedOut", { projetos: p1.data, publicacoes: p2.data });
+  };
+
+  // Usuários (listar com botão Conectar)
+  $("usuariosListar").onclick = async () => {
+    await atualizarEstadosConexao();
+
+    const r = await apiGet("/api/usuarios").catch(e => ({ ok: false, data: { erro: e.message } }));
+    const ul = $("usuariosList");
+    ul.innerHTML = "";
+
+    if (!Array.isArray(r.data) || r.data.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "Sem resultados.";
+      ul.appendChild(li);
+      out("usuariosOut", r.data);
+      return;
+    }
+
+    r.data.forEach(u => {
+      const li = document.createElement("li");
+
+      const txt = document.createElement("span");
+      txt.textContent = `${u.nome || "Sem nome"} | ${u.instituicao || "Sem instituição"} | ${u.area_pesquisa || "Sem área"} | id=${u.id || "-"}`;
+
+      const b = document.createElement("button");
+      aplicarEstadoBotaoUsuario(u, b);
+
+      b.onclick = async () => {
+        if (b.disabled) return;
+        const rr = await fetch(API_URL + "/api/conexoes/" + u.id, {
+          method: "POST",
+          headers: headers(true)
+        }).then(read).catch(e => ({ ok: false, data: { erro: e.message } }));
+
+        out("conexoesOut", rr.data);
+
+        if (rr.ok) {
+          estadosConexao.set(String(u.id), "enviado");
+          marcarConviteEnviado(b);
+        }
+      };
+
+      li.appendChild(txt);
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+
+    out("usuariosOut", r.data);
+  };
+
+  $("usuariosBuscar").onclick = async () => {
+    await atualizarEstadosConexao();
+
+    const termo = encodeURIComponent($("usuariosBusca").value.trim());
+    const r = await apiGet("/api/usuarios/buscar/" + termo).catch(e => ({ ok: false, data: { erro: e.message } }));
+    const ul = $("usuariosList");
+    ul.innerHTML = "";
+
+    if (!Array.isArray(r.data) || r.data.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "Nenhum usuário encontrado.";
+      ul.appendChild(li);
+    } else {
+      r.data.forEach(u => {
+        const li = document.createElement("li");
+
+        const txt = document.createElement("span");
+        txt.textContent = `${u.nome || "Sem nome"} | ${u.instituicao || "Sem instituição"} | ${u.area_pesquisa || "Sem área"}`;
+
+        const b = document.createElement("button");
+        aplicarEstadoBotaoUsuario(u, b);
+
+        b.onclick = async () => {
+          if (b.disabled) return;
+          const rr = await fetch(API_URL + "/api/conexoes/" + u.id, {
+            method: "POST",
+            headers: headers(true)
+          }).then(read).catch(e => ({ ok: false, data: { erro: e.message } }));
+
+          out("conexoesOut", rr.data);
+
+          if (rr.ok) {
+            estadosConexao.set(String(u.id), "enviado");
+            marcarConviteEnviado(b);
+          }
+        };
+
+        li.appendChild(txt);
+        li.appendChild(b);
+        ul.appendChild(li);
+      });
+    }
+
+    out("usuariosOut", r.data);
+  };
+
+  // Conexões
+  $("conexoesListar").onclick = async () => {
+    const r = await apiGet("/api/conexoes").catch(e => ({ ok: false, data: { erro: e.message } }));
+    renderList($("conexoesList"), r.data, c => {
+      return `${c.nome || c.receptor_nome || c.solicitante_nome || "Conexão"} | status=${c.status || "aceito"}`;
+    });
+    out("conexoesOut", r.data);
+  };
+
+  $("pendentesBtn").onclick = async () => {
+    const r = await apiGet("/api/conexoes/pendentes").catch(e => ({ ok: false, data: { erro: e.message } }));
+    const ul = $("pendentesList");
+    ul.innerHTML = "";
+
+    if (!Array.isArray(r.data) || r.data.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "Nenhum convite recebido.";
+      ul.appendChild(li);
+      return;
+    }
+
+    r.data.forEach(c => {
+      const li = document.createElement("li");
+      const span = document.createElement("span");
+      span.textContent = `${c.solicitante_nome || "Usuário"} (${c.solicitante_instituicao || "Sem instituição"}) `;
+
+      const ok = document.createElement("button");
+      ok.textContent = "Aceitar";
+      const no = document.createElement("button");
+      no.textContent = "Recusar";
+
+      ok.onclick = () => responderConvite(c.id, "aceito", li, ok, no);
+      no.onclick = () => responderConvite(c.id, "recusado", li, ok, no);
+
+      li.appendChild(span);
+      li.appendChild(ok);
+      li.appendChild(no);
+      ul.appendChild(li);
+    });
+  };
+
+  async function responderConvite(id, status, li, btnAceitar, btnRecusar) {
+    const r = await fetch(API_URL + "/api/conexoes/" + id, {
+      method: "PUT",
+      headers: headers(true),
+      body: JSON.stringify({ status })
+    }).then(read).catch(e => ({ ok: false, data: { erro: e.message } }));
+
+    out("conexoesOut", r.data);
+
+    if (r.ok) {
+      if (status === "aceito") {
+        btnAceitar.textContent = "Convite aceito";
+        btnAceitar.disabled = true;
+        if (btnRecusar) btnRecusar.remove();
+      } else {
+        btnRecusar.textContent = "Convite recusado";
+        btnRecusar.disabled = true;
+        if (btnAceitar) btnAceitar.remove();
+      }
+    }
+  }
+
+  $("enviadosBtn").onclick = async () => {
+    const r = await apiGet("/api/conexoes/pendentes-enviados").catch(e => ({ ok: false, data: { erro: e.message } }));
+    const ul = $("enviadosList");
+    ul.innerHTML = "";
+
+    if (!r.ok) {
+      const li = document.createElement("li");
+      li.textContent = "Rota não disponível no backend.";
+      ul.appendChild(li);
+      return;
+    }
+
+    renderList(ul, r.data, c => `${c.receptor_nome || c.receptor_id || "Destino"} | aguardando resposta`);
+  };
+
+  // Projetos
+  $("projetosListar").onclick = async () => {
+    const r = await apiGet("/api/projetos").catch(e => ({ ok: false, data: { erro: e.message } }));
+    renderList($("projetosList"), r.data, p => `${p.titulo || "Sem título"} | ${p.area_pesquisa || "Sem área"} | ${p.status || "-"}`);
+    out("projetosOut", r.data);
+  };
+
+  $("projCriar").onclick = async () => {
+    const payload = {
+      titulo: $("projTitulo").value,
+      descricao: $("projDescricao").value,
+      area_pesquisa: $("projArea").value,
+      status: $("projStatus").value
+    };
+    const r = await fetch(API_URL + "/api/projetos", {
+      method: "POST",
+      headers: headers(true),
+      body: JSON.stringify(payload)
+    }).then(read).catch(e => ({ ok: false, data: { erro: e.message } }));
+    out("projetosOut", r.data);
+  };
+
+  // Publicações
+  $("pubListar").onclick = async () => {
+    const r = await apiGet("/api/publicacoes").catch(e => ({ ok: false, data: { erro: e.message } }));
+    renderList($("pubList"), r.data, p => `${p.titulo || "Sem título"} | ${p.resumo || "Sem resumo"}`);
+    out("pubOut", r.data);
+  };
+
+  $("pubCriar").onclick = async () => {
+    const fd = new FormData();
+    fd.append("titulo", $("pubTitulo").value);
+    fd.append("resumo", $("pubResumo").value);
+    const arq = $("pubArquivo").files[0];
+    if (arq) fd.append("arquivo", arq);
+
+    const r = await fetch(API_URL + "/api/publicacoes", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + token() },
+      body: fd
+    }).then(read).catch(e => ({ ok: false, data: { erro: e.message } }));
+
+    out("pubOut", r.data);
+  };
+
+  // Perfil
+  $("perfilSalvar").onclick = async () => {
+    const payload = {
+      nome: $("perfilNome").value,
+      instituicao: $("perfilInst").value,
+      area_pesquisa: $("perfilArea").value,
+      lattes: $("perfilLattes").value,
+      bio: $("perfilBio").value
+    };
+    const r = await fetch(API_URL + "/api/usuarios/perfil", {
+      method: "PUT",
+      headers: headers(true),
+      body: JSON.stringify(payload)
+    }).then(read).catch(e => ({ ok: false, data: { erro: e.message } }));
+    out("perfilOut", r.data);
+  };
+
+  // Init
+  setToken(token());
+</script>
+
+</body>
+</html>
