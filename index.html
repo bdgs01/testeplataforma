@@ -508,8 +508,8 @@ ul{
     show(logged ? "feed" : "auth");
   }
 
-  function headers(json = true) {
-    const h = {};
+function headers(json = true) {
+    const h = { "ngrok-skip-browser-warning": "true" };
     if (json) h["Content-Type"] = "application/json";
     if (token()) h["Authorization"] = "Bearer " + token();
     return h;
